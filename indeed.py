@@ -20,22 +20,32 @@ def extract_indeed_pages():
 
   return last_page
 
+def extract_job(html):
+  title = html.find("div", {"class": "title"}).find("a")["title"]
+  company = html.find("span", {"class": "company"})
+  company_anchor = company.find("a")
+  if company_anchor is not None:
+    company = str(company.find("a").string)
+  else:
+    company = str(company.string)
+  company = company.strip()
+  
+  location = html.find("div", {"class": "recJobLoc"})["data-rc-loc"]
+
+  job_id = html["data-jk"]
+
+  return {'title': title, 'company': company, 'location': location, 'link': f"https://kr.indeed.com/viewjob?jk={job_id}"}
+
 def extract_indeed_jobs(last_page):
   jobs = []
-  # for page in range(last_page):
-  result = requests.get(f"{URL}&start={0*LIMIT}")
-  soup = BeautifulSoup(result.text, 'html.parser')
+  for page in range(last_page):
+    print(f"Scrapping page {page}")
+    result = requests.get(f"{URL}&start={page*LIMIT}")
+    soup = BeautifulSoup(result.text, 'html.parser')
 
-  # title 추출
-  results = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
-  for res in results:
-    title = res.find("div", {"class": "title"}).find("a")["title"]
-    company = res.find("span", {"class": "company"})
-    company_anchor = company.find("a")
-    if company_anchor is not None:
-      company = str(company.find("a").string)
-    else:
-      company = str(company.string)
-    company = company.strip()
-    print(f"title: {title}\ncompany: {company}\n")
+    # title 추출
+    results = soup.find_all("div", {"class": "jobsearch-SerpJobCard"})
+    for res in results:
+      job = extract_job(res)
+      jobs.append(job)
   return jobs
