@@ -37,7 +37,11 @@ def extract_job(html):
 
   job_id = html["data-jk"]
 
-  return {'title': title, 'company': company, 'location': location, 'link': f"https://kr.indeed.com/viewjob?jk={job_id}"}
+  return {
+    'title': title, 
+    'company': company, 
+    'location': location, 
+    'link': f"https://kr.indeed.com/viewjob?jk={job_id}"}
 
 def extract_jobs(last_page):
   jobs = []
