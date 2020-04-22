@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-URL = f"https://stackoverflow.com/jobs?q=python"
+URL = f"https://stackoverflow.com/jobs?q=python&sort=i"
 
 
 def get_last_page():
@@ -13,14 +13,15 @@ def get_last_page():
 
 
 def extract_job(html):
-    title = html.find("div", {"class": "fl1"}).find("h2").find("a")["title"]
+    title = html.find("h2").find("a")["title"]
 
-    company_row = html.find("div", {
-        "class": "fl1"
-    }).find("h3").find_all(
-        "span", recursiv=False)
-    company = company_row[0].get_text(strip=True)
-    location = company_row[1].get_text(strip=True)
+    company, location = html.find("h3").find_all("span", recursive=False)
+    # company_row = html.find("div", {
+    #     "class": "fl1"
+    # }).find("h3").find_all(
+    #     "span", recursiv=False)
+    company = company.get_text(strip=True)
+    location = location.get_text(strip=True)
 
     job_id = html["data-jobid"]
 
